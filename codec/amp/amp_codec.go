@@ -5,7 +5,7 @@
 // commons "CC0" public domain dedication. See LICENSE or
 // <http://creativecommons.org/publicdomain/zero/1.0/> for full details.
 
-package amper
+package ampcodec
 
 import (
 	"bytes"
