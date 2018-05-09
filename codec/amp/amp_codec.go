@@ -62,8 +62,9 @@ func (enc *Encoder) Close() (err error) {
 	if err != nil {
 		return err
 	}
-	// Write AMP trailer.
-	if atomic.LoadUint32(&enc.trailerWritten) == 0 {
+	// Write AMP trailer if we wrote the header.
+	if atomic.LoadUint32(&enc.headerWritten) == 1 &&
+		atomic.LoadUint32(&enc.trailerWritten) == 0 {
 		_, err = enc.w.Write(ampTrailer)
 		if err != nil {
 			return err
