@@ -50,18 +50,27 @@ func (c *Client) RoundTrip(r io.Reader) (io.ReadCloser, error) {
 	if err != nil {
 		return nil, err
 	}
+	// Compile plain URL
 	u := &url.URL{
 		Scheme:   "https",
-		Host:     c.Front,
-		Path:     path.Join("v", "s", c.Host, c.Path, reqPath),
+		Host:     c.Host,
+		Path:     path.Join(c.Path, reqPath),
 		RawQuery: "amp_js_v=0.1",
+	}
+	// Do domain fronting
+	if c.Front != "" {
+		u.Host = c.Front
+		u.Path = path.Join("v", "s", c.Host, u.Path)
 	}
 	req, err := http.NewRequest(http.MethodGet, u.String(), nil)
 	if err != nil {
 		return nil, err
 	}
+
 	// Rewrite Host header to the AMP one
-	req.Host = hostToAMPHost(c.Host)
+	if c.Front != "" {
+		req.Host = hostToAMPHost(c.Host)
+	}
 
 	transport := http.DefaultTransport
 	if c.Transport != nil {
