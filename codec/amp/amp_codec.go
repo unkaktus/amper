@@ -12,6 +12,7 @@ import (
 	"encoding/base64"
 	"errors"
 	"io"
+	"io/ioutil"
 	"sync"
 	"sync/atomic"
 
@@ -130,7 +131,7 @@ func getNodeByID(n *html.Node, id string) *html.Node {
 }
 
 // NewDecoder extracts payload from an AMP page body r.
-func NewDecoder(r io.Reader) (io.Reader, error) {
+func NewDecoder(r io.Reader) (io.ReadCloser, error) {
 	doc, err := html.Parse(r)
 	if err != nil {
 		return nil, err
@@ -142,7 +143,7 @@ func NewDecoder(r io.Reader) (io.Reader, error) {
 	}
 	// The node found but there is no child.
 	if n.FirstChild == nil {
-		return bytes.NewReader(nil), nil
+		return ioutil.NopCloser(bytes.NewReader(nil)), nil
 	}
 	data := n.FirstChild.Data
 	b, err := base64.RawURLEncoding.DecodeString(data)
@@ -150,5 +151,5 @@ func NewDecoder(r io.Reader) (io.Reader, error) {
 		return nil, err
 	}
 	br := bytes.NewReader(b)
-	return br, nil
+	return ioutil.NopCloser(br), nil
 }

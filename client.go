@@ -43,7 +43,7 @@ type Client struct {
 
 // RoundTrip writes data from reader r to the server and returns
 // reply from the server.
-func (c *Client) RoundTrip(r io.Reader) (io.Reader, error) {
+func (c *Client) RoundTrip(r io.Reader) (io.ReadCloser, error) {
 	reqPath, err := getcodec.Encode(r)
 	if err != nil {
 		return nil, err
