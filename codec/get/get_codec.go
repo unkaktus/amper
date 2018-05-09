@@ -11,7 +11,6 @@ import (
 	"bytes"
 	"crypto/rand"
 	"encoding/base64"
-	"errors"
 	"io"
 	"io/ioutil"
 	"path"
@@ -44,11 +43,8 @@ func Encode(r io.Reader) (string, error) {
 
 // Decode decodes request data from the path.
 func Decode(path string) (*bytes.Reader, error) {
-	sp := strings.SplitN(path, "/", 3)
-	if len(sp) < 3 {
-		return nil, errors.New("path is too short")
-	}
-	b, err := base64.RawURLEncoding.DecodeString(sp[2])
+	sp := strings.Split(path, "/")
+	b, err := base64.RawURLEncoding.DecodeString(sp[len(sp)-1])
 	if err != nil {
 		return nil, err
 	}
