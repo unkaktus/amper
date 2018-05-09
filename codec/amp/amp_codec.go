@@ -53,8 +53,12 @@ type Encoder struct {
 
 // Close signals Encoder that there will be no data so it may write
 // trailer.
-func (enc *Encoder) Close() error {
-	err := enc.dataEncoder.Close()
+func (enc *Encoder) Close() (err error) {
+	enc.dataEncoderMutex.Lock()
+	if enc.dataEncoder != nil {
+		err = enc.dataEncoder.Close()
+	}
+	enc.dataEncoderMutex.Unlock()
 	if err != nil {
 		return err
 	}
