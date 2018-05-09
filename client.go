@@ -36,6 +36,8 @@ type Client struct {
 	Host string
 	// Front is the hostname sent in TLS SNI.
 	Front string
+	// Path is the prefix path for making requests.
+	Path string
 	// Transport is the http.RoundTripper to use to perform requests.
 	// If Transport is nil then http.DefaultTransport is used.
 	Transport http.RoundTripper
@@ -51,7 +53,7 @@ func (c *Client) RoundTrip(r io.Reader) (io.ReadCloser, error) {
 	u := &url.URL{
 		Scheme:   "https",
 		Host:     c.Front,
-		Path:     path.Join("v", "s", c.Host, reqPath),
+		Path:     path.Join("v", "s", c.Host, c.Path, reqPath),
 		RawQuery: "amp_js_v=0.1",
 	}
 	req, err := http.NewRequest(http.MethodGet, u.String(), nil)
