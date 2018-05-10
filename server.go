@@ -19,6 +19,19 @@ type Handler interface {
 	Handle(w io.Writer, r io.Reader) error
 }
 
+type handlerFunc struct {
+	hf func(w io.Writer, r io.Reader) error
+}
+
+func (h handlerFunc) Handle(w io.Writer, r io.Reader) error {
+	return h.hf(w, r)
+}
+
+// Handler wraps a handle function hf into Handler.
+func HandlerFunc(hf func(w io.Writer, r io.Reader) error) Handler {
+	return handlerFunc{hf: hf}
+}
+
 var (
 	// Google AMP subnets
 	allowedSubnets = []string{
