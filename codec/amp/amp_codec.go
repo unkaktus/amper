@@ -13,8 +13,10 @@ import (
 	"errors"
 	"io"
 	"io/ioutil"
+	"strings"
 	"sync"
 	"sync/atomic"
+	"unicode"
 
 	"golang.org/x/net/html"
 )
@@ -96,7 +98,12 @@ func (enc *Encoder) Write(p []byte) (n int, err error) {
 	}
 	enc.dataEncoderMutex.Lock()
 	if enc.dataEncoder == nil {
-		enc.dataEncoder = base64.NewEncoder(base64.RawURLEncoding, enc.w)
+		w, ok := enc.w.(io.WriteCloser)
+		if !ok {
+			w = NopCloser(enc.w)
+		}
+		padWriter := NewPaddingWriter(w, " ", 32)
+		enc.dataEncoder = base64.NewEncoder(base64.RawURLEncoding, padWriter)
 	}
 	enc.dataEncoderMutex.Unlock()
 	return enc.dataEncoder.Write(p)
@@ -146,6 +153,13 @@ func NewDecoder(r io.Reader) (io.ReadCloser, error) {
 		return ioutil.NopCloser(bytes.NewReader(nil)), nil
 	}
 	data := n.FirstChild.Data
+	// Remove all whitespaces
+	data = strings.Map(func(r rune) rune {
+		if unicode.IsSpace(r) {
+			return -1
+		}
+		return r
+	}, data)
 	b, err := base64.RawURLEncoding.DecodeString(data)
 	if err != nil {
 		return nil, err
