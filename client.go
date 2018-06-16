@@ -20,14 +20,18 @@ import (
 )
 
 const (
-	CDNDomain = "cdn.ampproject.org"
+	DefaultCDNDomain = "cdn.ampproject.org"
 )
 
 // hostToAMPHost transforms a DNS name into the name AMP CDN accepts.
-func hostToAMPHost(h string) string {
-	h = strings.Replace(h, "-", "--", -1)
-	h = strings.Replace(h, ".", "-", -1)
-	return h + "." + CDNDomain
+// If cdnDomain is empty, DefaultCDNDomain is used.
+func hostToAMPHost(cdnDomain, host string) string {
+	if cdnDomain == "" {
+		cdnDomain = DefaultCDNDomain
+	}
+	host = strings.Replace(host, "-", "--", -1)
+	host = strings.Replace(host, ".", "-", -1)
+	return host + "." + cdnDomain
 }
 
 // Client desribes a client state.
@@ -41,6 +45,9 @@ type Client struct {
 	// Transport is the http.RoundTripper to use to perform requests.
 	// If Transport is nil then http.DefaultTransport is used.
 	Transport http.RoundTripper
+	// CDNDomain is the domain suffix of the AMP CDN.
+	// If empty, DefaultCDNDomain is used.
+	CDNDomain string
 }
 
 // RoundTrip writes data from reader r to the server and returns
@@ -69,7 +76,7 @@ func (c *Client) RoundTrip(r io.Reader) (io.ReadCloser, error) {
 
 	// Rewrite Host header to the AMP one
 	if c.Front != "" {
-		req.Host = hostToAMPHost(c.Host)
+		req.Host = hostToAMPHost(c.CDNDomain, c.Host)
 	}
 
 	transport := http.DefaultTransport
