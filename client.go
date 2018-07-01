@@ -53,6 +53,9 @@ type Client struct {
 	// Scheme is either "https" or "http".
 	// If empty, Scheme defaults to "https".
 	Scheme string
+	// Query specifies query parameters to set for the URL.
+	// Defaults to "amp_js_v=0.1".
+	Query url.Values
 }
 
 // RoundTrip writes data from reader r to the server and returns
@@ -62,11 +65,17 @@ func (c *Client) RoundTrip(r io.Reader) (io.ReadCloser, error) {
 	if err != nil {
 		return nil, err
 	}
+
+	if c.Query == nil {
+		c.Query = url.Values{}
+		c.Query.Set("amp_js_v", "0.1")
+	}
+
 	// Compile plain URL
 	u := &url.URL{
 		Host:     c.Host,
 		Path:     path.Join(c.Path, reqPath),
-		RawQuery: "amp_js_v=0.1",
+		RawQuery: c.Query.Encode(),
 	}
 
 	// Set the scheme
