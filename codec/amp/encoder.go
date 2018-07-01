@@ -22,7 +22,7 @@ var (
     <meta charset="utf-8">
     <script async src="https://cdn.ampproject.org/v0.js"></script>
     <title>amp</title>
-    <link rel="canonical" href="https://ampproject.org" />
+    <link rel="canonical" href="#" />
     <meta name="viewport" content="width=device-width,minimum-scale=1,initial-scale=1">
     <style>body {opacity: 0}</style><noscript><style>body {opacity: 1}</style></noscript>
   </head>
