@@ -8,6 +8,7 @@
 package amper
 
 import (
+	"errors"
 	"fmt"
 	"io"
 	"net/http"
@@ -48,6 +49,10 @@ type Client struct {
 	// CDNDomain is the domain suffix of the AMP CDN.
 	// If empty, DefaultCDNDomain is used.
 	CDNDomain string
+	// Scheme specifies the URL scheme for accessing AMP CDN.
+	// Scheme is either "https" or "http".
+	// If empty, Scheme defaults to "https".
+	Scheme string
 }
 
 // RoundTrip writes data from reader r to the server and returns
@@ -59,11 +64,21 @@ func (c *Client) RoundTrip(r io.Reader) (io.ReadCloser, error) {
 	}
 	// Compile plain URL
 	u := &url.URL{
-		Scheme:   "https",
 		Host:     c.Host,
 		Path:     path.Join(c.Path, reqPath),
 		RawQuery: "amp_js_v=0.1",
 	}
+
+	// Set the scheme
+	switch c.Scheme {
+	case "https", "":
+		u.Scheme = "https"
+	case "http":
+		u.Scheme = "http"
+	default:
+		return nil, errors.New("unsupported scheme")
+	}
+
 	// Do domain fronting
 	if c.Front != "" {
 		u.Host = c.Front
