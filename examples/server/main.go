@@ -18,7 +18,8 @@ func (c *copier) Handle(w io.Writer, r io.Reader) error {
 
 func main() {
 	server := &amper.Server{
-		Handler: &copier{},
+		Handler:              &copier{},
+		UseOldAMPBoilerplate: true,
 	}
 	h := gziphandler.GzipHandler(server)
 
