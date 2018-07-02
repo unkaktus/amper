@@ -18,6 +18,7 @@ import (
 
 	ampcodec "github.com/nogoegst/amper/codec/amp"
 	getcodec "github.com/nogoegst/amper/codec/get"
+	"github.com/nogoegst/frontier"
 )
 
 const (
@@ -88,30 +89,28 @@ func (c *Client) RoundTrip(r io.Reader) (io.ReadCloser, error) {
 		return nil, errors.New("unsupported scheme")
 	}
 
-	// Do domain fronting
+	// If we're doing fronting, rewrite the URL
 	if c.Front != "" {
-		u.Host = c.Front
+		u.Host = hostToAMPHost(c.CDNDomain, c.Host)
 		u.Path = path.Join("v", "s", c.Host, u.Path)
 	}
+
 	req, err := http.NewRequest(http.MethodGet, u.String(), nil)
 	if err != nil {
 		return nil, err
-	}
-
-	// Rewrite Host header to the AMP one
-	if c.Front != "" {
-		req.Host = hostToAMPHost(c.CDNDomain, c.Host)
 	}
 
 	transport := http.DefaultTransport
 	if c.Transport != nil {
 		transport = c.Transport
 	}
-	resp, err := transport.RoundTrip(req)
+
+	resp, err := frontier.New(transport, c.Front, "").RoundTrip(req)
 	if err != nil {
 		return nil, err
 	}
 	defer resp.Body.Close()
+
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("http status code %d", resp.StatusCode)
 	}

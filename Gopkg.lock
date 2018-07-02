@@ -8,6 +8,18 @@
   version = "v1.0.1"
 
 [[projects]]
+  name = "github.com/matryer/is"
+  packages = ["."]
+  revision = "5f0030ca4decdf2e702be47575d88eabf610593e"
+  version = "v1.1.0"
+
+[[projects]]
+  name = "github.com/nogoegst/frontier"
+  packages = ["."]
+  revision = "e0c41d1be9ad5116d0f6e0ea2e7c142f7faa27a9"
+  version = "v0.2.0"
+
+[[projects]]
   name = "github.com/rs/zerolog"
   packages = [
     ".",
@@ -30,6 +42,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "3103d43d4bce22fae7e7ba9724608c09bc9afb0be5a813a70e74025185a2d607"
+  inputs-digest = "382c32993d5f9a8d4f5c344fad62d60d0ca38d9c83a40d080070cca351f0bdff"
   solver-name = "gps-cdcl"
   solver-version = 1
