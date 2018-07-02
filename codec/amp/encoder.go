@@ -10,13 +10,16 @@ package ampcodec
 import (
 	"encoding/base64"
 	"errors"
+	"fmt"
 	"io"
 	"sync"
 	"sync/atomic"
 )
 
 var (
-	ampHeader = []byte(`<!doctype html>
+	ampOldBoilerplate = "<style>body {opacity: 0}</style><noscript><style>body {opacity: 1}</style></noscript>"
+	ampBoilerplate    = "<style amp-boilerplate>body{-webkit-animation:-amp-start 8s steps(1,end) 0s 1 normal both;-moz-animation:-amp-start 8s steps(1,end) 0s 1 normal both;-ms-animation:-amp-start 8s steps(1,end) 0s 1 normal both;animation:-amp-start 8s steps(1,end) 0s 1 normal both}@-webkit-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-moz-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-ms-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-o-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}</style><noscript><style amp-boilerplate>body{-webkit-animation:none;-moz-animation:none;-ms-animation:none;animation:none}</style></noscript>"
+	ampHeaderFormat   = `<!doctype html>
 <html amp>
   <head>
     <meta charset="utf-8">
@@ -24,11 +27,11 @@ var (
     <title>amp</title>
     <link rel="canonical" href="#" />
     <meta name="viewport" content="width=device-width,minimum-scale=1,initial-scale=1">
-    <style>body {opacity: 0}</style><noscript><style>body {opacity: 1}</style></noscript>
+    %s
   </head>
   <body>
     <p>In varietate concordia</p>
-    <pre id="data">`)
+    <pre id="data">`
 	ampTrailer = []byte(`</pre>
   </body>
 </html>`)
@@ -46,6 +49,13 @@ type Encoder struct {
 	trailerWritten   uint32
 	dataEncoder      io.WriteCloser
 	dataEncoderMutex sync.Mutex
+
+	// UseOldBoilerplate sets Encoder to write
+	// deprecated AMP boilerplate. As it's much shorter
+	// than the new one, one may benefit from using it
+	// to save some bandwidth.
+	// Note that it may stop working in future.
+	UseOldBoilerplate bool
 }
 
 // Close signals Encoder that there will be no data so it may write
@@ -84,7 +94,11 @@ func (enc *Encoder) Write(p []byte) (n int, err error) {
 	}
 	// Write AMP header it we haven't
 	if atomic.LoadUint32(&enc.headerWritten) == 0 {
-		_, err = enc.w.Write(ampHeader)
+		if enc.UseOldBoilerplate {
+			_, err = fmt.Fprintf(enc.w, ampHeaderFormat, ampOldBoilerplate)
+		} else {
+			_, err = fmt.Fprintf(enc.w, ampHeaderFormat, ampBoilerplate)
+		}
 		atomic.StoreUint32(&enc.headerWritten, 1)
 		if err != nil {
 			return 0, err

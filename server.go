@@ -45,6 +45,12 @@ type Server struct {
 	Handler Handler
 	// Allow non-AMP remotes
 	AllowAllRemotes bool
+	// UseOldBoilerplate makes AMP encoder use
+	// deprecated AMP boilerplate. As it's much shorter
+	// than the new one, one may benefit from using it
+	// to save some bandwidth.
+	// Note that it may stop working in future.
+	UseOldAMPBoilerplate bool
 }
 
 func (ah *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -54,6 +60,7 @@ func (ah *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	// We always write AMP page even if it has no useful data.
 	enc := ampcodec.NewEncoder(w)
+	enc.UseOldBoilerplate = ah.UseOldAMPBoilerplate
 	defer enc.Close()
 	// We do not throw any HTTP errors because clients are not going
 	// to get them anyway (because of the cache middleware).
