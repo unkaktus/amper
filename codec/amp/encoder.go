@@ -108,7 +108,7 @@ func (enc *Encoder) Write(p []byte) (n int, err error) {
 	if enc.dataEncoder == nil {
 		w, ok := enc.w.(io.WriteCloser)
 		if !ok {
-			w = NopCloser(enc.w)
+			w = nopCloser(enc.w)
 		}
 		padWriter := NewPaddingWriter(w, " ", 32)
 		enc.dataEncoder = base64.NewEncoder(base64.RawURLEncoding, padWriter)
