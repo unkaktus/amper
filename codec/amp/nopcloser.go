@@ -11,14 +11,14 @@ import (
 	"io"
 )
 
-type nopCloser struct {
+type nop struct {
 	io.Writer
 }
 
-func (nopCloser) Close() error {
+func (nop) Close() error {
 	return nil
 }
 
-func NopCloser(w io.Writer) io.WriteCloser {
-	return nopCloser{w}
+func nopCloser(w io.Writer) io.WriteCloser {
+	return nop{w}
 }
