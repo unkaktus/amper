@@ -9,16 +9,12 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-type copier struct{}
-
-func (c *copier) Handle(w io.Writer, r io.Reader) error {
-	_, err := io.Copy(w, r)
-	return err
-}
-
 func main() {
 	server := &amper.Server{
-		Handler:              &copier{},
+		Handler: amper.HandlerFunc(func(w io.Writer, r io.Reader) error {
+			_, err := io.Copy(w, r)
+			return err
+		}),
 		UseOldAMPBoilerplate: true,
 	}
 	h := gziphandler.GzipHandler(server)
