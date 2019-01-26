@@ -15,7 +15,11 @@ import (
 	getcodec "github.com/nogoegst/amper/codec/get"
 )
 
+// Handler is the interface for request handler, i.e.
+// application-level logic handler.
 type Handler interface {
+	// Handle handles incoming data from r and writes
+	// responses to w.
 	Handle(w io.Writer, r io.Reader) error
 }
 
@@ -27,11 +31,13 @@ func (h handlerFunc) Handle(w io.Writer, r io.Reader) error {
 	return h.hf(w, r)
 }
 
-// Handler wraps a handle function hf into Handler.
+// HandlerFunc wraps a handler function hf into Handler.
 func HandlerFunc(hf func(w io.Writer, r io.Reader) error) Handler {
 	return handlerFunc{hf: hf}
 }
 
+// Server is an http.Handler that handles amper requests over
+// AMP pages.
 type Server struct {
 	// Handler to handle requests
 	Handler Handler
