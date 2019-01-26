@@ -32,19 +32,9 @@ func HandlerFunc(hf func(w io.Writer, r io.Reader) error) Handler {
 	return handlerFunc{hf: hf}
 }
 
-var (
-	// Google AMP subnets
-	allowedSubnets = []string{
-		"66.249.64.0/19",
-		"66.102.0.0/20",
-	}
-)
-
 type Server struct {
 	// Handler to handle requests
 	Handler Handler
-	// Allow non-AMP remotes
-	AllowAllRemotes bool
 	// UseOldBoilerplate makes AMP encoder use
 	// deprecated AMP boilerplate. As it's much shorter
 	// than the new one, one may benefit from using it
