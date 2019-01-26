@@ -22,6 +22,7 @@ import (
 )
 
 const (
+	// DefaultCDNDomain is the default domain of AMP cache.
 	DefaultCDNDomain = "cdn.ampproject.org"
 )
 
