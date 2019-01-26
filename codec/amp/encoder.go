@@ -38,6 +38,7 @@ var (
 )
 
 var (
+	// ErrEncoderClosed designates that the Encoder was already closed.
 	ErrEncoderClosed = errors.New("encoder is already closed")
 )
 
@@ -81,6 +82,7 @@ func (enc *Encoder) Close() (err error) {
 	return nil
 }
 
+// NewEncoder instantiates new Encoder with target writer w.
 func NewEncoder(w io.Writer) *Encoder {
 	enc := &Encoder{
 		w: w,
