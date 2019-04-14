@@ -45,7 +45,7 @@ type Server struct {
 	// deprecated AMP boilerplate. As it's much shorter
 	// than the new one, one may benefit from using it
 	// to save some bandwidth.
-	// Note that it may stop working in future.
+	// Note that it doesn't work on Google AMP cache anymore.
 	UseOldAMPBoilerplate bool
 }
 

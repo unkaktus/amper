@@ -17,7 +17,6 @@ func main() {
 			_, err := io.Copy(w, r)
 			return err
 		}),
-		UseOldAMPBoilerplate: true,
 	}
 	h := gziphandler.GzipHandler(server)
 
