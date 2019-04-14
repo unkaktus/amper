@@ -11,7 +11,7 @@ import (
 func main() {
 	c := &amper.Client{
 		Host:  "amp.nogoegst.net",
-		Front: "google.com",
+		Front: "www.google.com",
 	}
 
 	req := &bytes.Buffer{}
