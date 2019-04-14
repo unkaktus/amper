@@ -6,7 +6,9 @@ import (
 
 	"github.com/NYTimes/gziphandler"
 	"github.com/nogoegst/amper"
+	_ "github.com/nogoegst/cabin/magic"
 	"github.com/rs/zerolog/log"
+	"golang.org/x/crypto/acme/autocert"
 )
 
 func main() {
@@ -19,7 +21,19 @@ func main() {
 	}
 	h := gziphandler.GzipHandler(server)
 
-	if err := http.ListenAndServeTLS(":https", "/tls/fullchain.pem", "/tls/privkey.pem", h); err != nil {
+	m := autocert.Manager{
+		Prompt:     autocert.AcceptTOS,
+		HostPolicy: autocert.HostWhitelist("amp.nogoegst.net"),
+		Cache:      autocert.DirCache("acme-cache"),
+	}
+
+	httpServer := &http.Server{
+		Addr:      ":https",
+		TLSConfig: m.TLSConfig(),
+		Handler:   h,
+	}
+
+	if err := httpServer.ListenAndServeTLS("", ""); err != nil {
 		log.Fatal().Err(err).Msg("serve HTTP")
 	}
 
