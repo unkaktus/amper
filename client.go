@@ -24,6 +24,9 @@ import (
 const (
 	// DefaultCDNDomain is the default domain of AMP cache.
 	DefaultCDNDomain = "cdn.ampproject.org"
+	// DefaultBytesRange is the default value for bytes range.
+	// It is to skip all the AMP boilerplate and save bandwidth.
+	DefaultBytesRange = "12500-"
 )
 
 // hostToAMPHost transforms a DNS name into the name AMP CDN accepts.
@@ -58,6 +61,10 @@ type Client struct {
 	// Query specifies query parameters to set for the URL.
 	// Defaults to "amp_js_v=0.1".
 	Query url.Values
+	// BytesRange is the bytes range string (eg. "100-120")
+	// for the page to request.
+	// Defaults to DefaultBytesRange if not set.
+	BytesRange string
 }
 
 // RoundTrip writes data from reader r to the server and returns
@@ -101,6 +108,12 @@ func (c *Client) RoundTrip(r io.Reader) (io.ReadCloser, error) {
 		return nil, err
 	}
 
+	bytesRange := DefaultBytesRange
+	if c.BytesRange != "" {
+		bytesRange = c.BytesRange
+	}
+	req.Header.Set("Range", "bytes="+bytesRange)
+
 	transport := http.DefaultTransport
 	if c.Transport != nil {
 		transport = c.Transport
@@ -112,7 +125,9 @@ func (c *Client) RoundTrip(r io.Reader) (io.ReadCloser, error) {
 	}
 	defer resp.Body.Close()
 
-	if resp.StatusCode != http.StatusOK {
+	switch resp.StatusCode {
+	case http.StatusOK, http.StatusPartialContent:
+	default:
 		return nil, fmt.Errorf("http status code %d", resp.StatusCode)
 	}
 	data, err := ampcodec.NewDecoder(resp.Body)
