@@ -8,7 +8,6 @@ import (
 	"github.com/nogoegst/amper"
 	_ "github.com/nogoegst/cabin/magic"
 	"github.com/rs/zerolog/log"
-	"golang.org/x/crypto/acme/autocert"
 )
 
 func main() {
@@ -20,19 +19,8 @@ func main() {
 	}
 	h := gziphandler.GzipHandler(server)
 
-	m := autocert.Manager{
-		Prompt:     autocert.AcceptTOS,
-		HostPolicy: autocert.HostWhitelist("amp.nogoegst.net"),
-		Cache:      autocert.DirCache("acme-cache"),
-	}
-
-	httpServer := &http.Server{
-		Addr:      ":https",
-		TLSConfig: m.TLSConfig(),
-		Handler:   h,
-	}
-
-	if err := httpServer.ListenAndServeTLS("", ""); err != nil {
+	// We listen at port 80 here because we run Caddy to manage TLS certs
+	if err := http.ListenAndServe(":http", h); err != nil {
 		log.Fatal().Err(err).Msg("serve HTTP")
 	}
 
