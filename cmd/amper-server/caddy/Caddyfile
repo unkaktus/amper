@@ -1,0 +1,10 @@
+amp.nogoegst.net {
+    reverse_proxy amper-server:80 {
+      flush_interval -1
+    }
+    log {
+      output stderr
+      format json
+      level INFO
+    }
+}

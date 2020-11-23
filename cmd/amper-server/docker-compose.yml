@@ -1,0 +1,12 @@
+version: "3.8"
+services:
+  amper-server:
+    build:
+      context: .
+    restart: always
+    networks:
+      - web
+networks:
+  web:
+    external:
+      name: web
