@@ -5,9 +5,9 @@ import (
 	"net/http"
 
 	"github.com/NYTimes/gziphandler"
-	"github.com/nogoegst/amper"
-	_ "github.com/nogoegst/cabin/magic"
 	"github.com/rs/zerolog/log"
+	"github.com/unkaktus/amper"
+	_ "github.com/unkaktus/cabin/magic"
 )
 
 func main() {

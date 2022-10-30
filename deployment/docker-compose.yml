@@ -1,0 +1,19 @@
+version: "3.8"
+services:
+  amper-status:
+    build:
+      dockerfile: deployment/Dockerfile.status
+      context: ..
+    restart: always
+    networks:
+      - web
+  amper-server:
+    build:
+      dockerfile: deployment/Dockerfile.server
+      context: ..
+    restart: always
+    networks:
+      - web
+networks:
+  web:
+    name: web

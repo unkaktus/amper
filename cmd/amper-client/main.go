@@ -8,8 +8,8 @@ import (
 	"time"
 
 	"github.com/google/go-cmp/cmp"
-	"github.com/nogoegst/amper"
 	"github.com/rs/zerolog/log"
+	"github.com/unkaktus/amper"
 )
 
 func ping(c *amper.Client) {
@@ -33,7 +33,7 @@ func ping(c *amper.Client) {
 
 func main() {
 	c := &amper.Client{
-		Host:  "amp.nogoegst.net",
+		Host:  "amp.unkaktus.art",
 		Front: "www.google.com",
 	}
 

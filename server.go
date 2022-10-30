@@ -11,8 +11,8 @@ import (
 	"io"
 	"net/http"
 
-	ampcodec "github.com/nogoegst/amper/codec/amp"
-	getcodec "github.com/nogoegst/amper/codec/get"
+	ampcodec "github.com/unkaktus/amper/codec/amp"
+	getcodec "github.com/unkaktus/amper/codec/get"
 )
 
 // Handler is the interface for request handler, i.e.

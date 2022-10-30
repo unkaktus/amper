@@ -12,8 +12,8 @@ import (
 	"time"
 
 	"github.com/google/go-cmp/cmp"
-	"github.com/nogoegst/amper"
 	"github.com/rs/zerolog/log"
+	"github.com/unkaktus/amper"
 )
 
 func ping(c *amper.Client, payloadSize int64) error {
@@ -82,7 +82,7 @@ func statusPageHandler() http.Handler {
 
 func main() {
 	var payloadSize = flag.Int64("payload-size", 1550, "size of echo payload")
-	var host = flag.String("host", "amp.nogoegst.net", "AMP host (amper-server)")
+	var host = flag.String("host", "amp.unkaktus.art", "AMP host (amper-server)")
 	var front = flag.String("front", "www.google.com", "Fronting domain")
 	var interval = flag.Duration("interval", time.Second, "Ping interval")
 	flag.Parse()

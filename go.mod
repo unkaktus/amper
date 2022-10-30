@@ -1,4 +1,4 @@
-module github.com/nogoegst/amper
+module github.com/unkaktus/amper
 
 go 1.15
 
@@ -7,8 +7,8 @@ require (
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/google/go-cmp v0.3.0
 	github.com/matryer/is v1.2.0
-	github.com/nogoegst/cabin v0.1.0
-	github.com/nogoegst/frontier v0.4.0
+	github.com/unkaktus/cabin v0.3.1
+	github.com/unkaktus/frontier v0.5.0
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/rs/zerolog v1.10.3
 	github.com/stretchr/testify v1.2.2 // indirect

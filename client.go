@@ -16,9 +16,9 @@ import (
 	"path"
 	"strings"
 
-	ampcodec "github.com/nogoegst/amper/codec/amp"
-	getcodec "github.com/nogoegst/amper/codec/get"
-	"github.com/nogoegst/frontier"
+	ampcodec "github.com/unkaktus/amper/codec/amp"
+	getcodec "github.com/unkaktus/amper/codec/get"
+	"github.com/unkaktus/frontier"
 )
 
 const (

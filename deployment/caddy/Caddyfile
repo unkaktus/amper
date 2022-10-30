@@ -1,4 +1,4 @@
-amp.nogoegst.net {
+amp.unkaktus.art {
     reverse_proxy amper-server:80 {
       flush_interval -1
     }

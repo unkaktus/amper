@@ -1,0 +1,9 @@
+FROM golang:alpine as build
+WORKDIR /amper/
+COPY . .
+RUN go build -v -o cmd/amper-status/amper-status ./cmd/amper-status
+
+FROM alpine
+COPY --from=build /amper/cmd/amper-status/amper-status /
+ENTRYPOINT [ "/amper-status" ]
+CMD ["-interval", "15m"]

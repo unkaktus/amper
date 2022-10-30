@@ -1,0 +1,8 @@
+FROM golang:alpine as build
+WORKDIR /amper/
+COPY . .
+RUN go build -v -o cmd/amper-server/amper-server ./cmd/amper-server
+
+FROM alpine
+COPY --from=build /amper/cmd/amper-server/amper-server /
+ENTRYPOINT [ "/amper-server" ]
