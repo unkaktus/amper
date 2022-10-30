@@ -70,15 +70,25 @@ var statusPageTemplate = `<html>
 </html>
 `
 
-func statusPageHandler() http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		t := template.Must(template.New("status.html").Parse(statusPageTemplate))
-		err := t.Execute(w, status)
-		if err != nil {
-			log.Error().Err(err).Msg("execute template")
-		}
-	})
-}
+var worksBadge = `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="86" height="20" role="img" aria-label="status: works"><title>status: works</title><linearGradient id="s" x2="0" y2="100%"><stop offset="0" stop-color="#bbb" stop-opacity=".1"/><stop offset="1" stop-opacity=".1"/></linearGradient><clipPath id="r"><rect width="86" height="20" rx="3" fill="#fff"/></clipPath><g clip-path="url(#r)"><rect width="43" height="20" fill="#555"/><rect x="43" width="43" height="20" fill="#97ca00"/><rect width="86" height="20" fill="url(#s)"/></g><g fill="#fff" text-anchor="middle" font-family="Verdana,Geneva,DejaVu Sans,sans-serif" text-rendering="geometricPrecision" font-size="110"><text aria-hidden="true" x="225" y="150" fill="#010101" fill-opacity=".3" transform="scale(.1)" textLength="330">status</text><text x="225" y="140" transform="scale(.1)" fill="#fff" textLength="330">status</text><text aria-hidden="true" x="635" y="150" fill="#010101" fill-opacity=".3" transform="scale(.1)" textLength="330">works</text><text x="635" y="140" transform="scale(.1)" fill="#fff" textLength="330">works</text></g></svg>`
+var brokenBadge = `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="92" height="20" role="img" aria-label="status: broken"><title>status: broken</title><linearGradient id="s" x2="0" y2="100%"><stop offset="0" stop-color="#bbb" stop-opacity=".1"/><stop offset="1" stop-opacity=".1"/></linearGradient><clipPath id="r"><rect width="92" height="20" rx="3" fill="#fff"/></clipPath><g clip-path="url(#r)"><rect width="43" height="20" fill="#555"/><rect x="43" width="49" height="20" fill="#e05d44"/><rect width="92" height="20" fill="url(#s)"/></g><g fill="#fff" text-anchor="middle" font-family="Verdana,Geneva,DejaVu Sans,sans-serif" text-rendering="geometricPrecision" font-size="110"><text aria-hidden="true" x="225" y="150" fill="#010101" fill-opacity=".3" transform="scale(.1)" textLength="330">status</text><text x="225" y="140" transform="scale(.1)" fill="#fff" textLength="330">status</text><text aria-hidden="true" x="665" y="150" fill="#010101" fill-opacity=".3" transform="scale(.1)" textLength="390">broken</text><text x="665" y="140" transform="scale(.1)" fill="#fff" textLength="390">broken</text></g></svg>`
+
+var statusPageHandler http.Handler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	t := template.Must(template.New("status.html").Parse(statusPageTemplate))
+	err := t.Execute(w, status)
+	if err != nil {
+		log.Error().Err(err).Msg("execute template")
+	}
+})
+
+var statusBadgeHandler http.Handler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "image/svg+xml;charset=utf-8")
+	if status.Works {
+		w.Write([]byte(worksBadge))
+	} else {
+		w.Write([]byte(brokenBadge))
+	}
+})
 
 func main() {
 	var payloadSize = flag.Int64("payload-size", 1550, "size of echo payload")
@@ -114,7 +124,10 @@ func main() {
 		}
 	}()
 
-	h := statusPageHandler()
+	h := http.NewServeMux()
+	h.Handle("/status.svg", statusBadgeHandler)
+	h.Handle("/status", statusPageHandler)
+
 	if err := http.ListenAndServe(":http", h); err != nil {
 		log.Fatal().Err(err).Msg("serve HTTP")
 	}
