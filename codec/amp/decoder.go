@@ -12,7 +12,6 @@ import (
 	"encoding/base64"
 	"errors"
 	"io"
-	"io/ioutil"
 	"strings"
 	"unicode"
 
@@ -58,7 +57,7 @@ func NewDecoder(r io.Reader) (io.ReadCloser, error) {
 	}
 	// The node found but there is no child.
 	if n.FirstChild == nil {
-		return ioutil.NopCloser(bytes.NewReader(nil)), nil
+		return io.NopCloser(bytes.NewReader(nil)), nil
 	}
 	data := n.FirstChild.Data
 	// Remove all whitespaces
@@ -73,5 +72,5 @@ func NewDecoder(r io.Reader) (io.ReadCloser, error) {
 		return nil, err
 	}
 	br := bytes.NewReader(b)
-	return ioutil.NopCloser(br), nil
+	return io.NopCloser(br), nil
 }

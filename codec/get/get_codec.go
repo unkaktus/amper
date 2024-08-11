@@ -12,7 +12,6 @@ import (
 	"crypto/rand"
 	"encoding/base64"
 	"io"
-	"io/ioutil"
 	"path"
 	"strings"
 )
@@ -33,7 +32,7 @@ func randomID() string {
 // encoded into URL-safe Base64.
 func Encode(r io.Reader) (string, error) {
 	slug := randomID()
-	data, err := ioutil.ReadAll(r)
+	data, err := io.ReadAll(r)
 	if err != nil {
 		return "", err
 	}

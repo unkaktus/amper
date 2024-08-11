@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"crypto/rand"
 	"io"
-	"io/ioutil"
 	"time"
 
 	"github.com/google/go-cmp/cmp"
@@ -22,7 +21,7 @@ func ping(c *amper.Client) {
 		log.Fatal().Err(err).Msg("perform round trip")
 	}
 
-	respData, err := ioutil.ReadAll(resp)
+	respData, err := io.ReadAll(resp)
 	if err != nil {
 		log.Fatal().Err(err).Msg("read out response")
 	}

@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"html/template"
 	"io"
-	"io/ioutil"
 	"net/http"
 	"time"
 
@@ -26,7 +25,7 @@ func ping(c *amper.Client, payloadSize int64) error {
 		return fmt.Errorf("perform round trip: %w", err)
 	}
 
-	respData, err := ioutil.ReadAll(resp)
+	respData, err := io.ReadAll(resp)
 	if err != nil {
 		return fmt.Errorf("read out response: %w", err)
 	}
@@ -91,10 +90,11 @@ var statusBadgeHandler http.Handler = http.HandlerFunc(func(w http.ResponseWrite
 })
 
 func main() {
-	var payloadSize = flag.Int64("payload-size", 1550, "size of echo payload")
-	var host = flag.String("host", "amp.unkaktus.art", "AMP host (amper-server)")
-	var front = flag.String("front", "www.google.com", "Fronting domain")
-	var interval = flag.Duration("interval", time.Second, "Ping interval")
+	payloadSize := flag.Int64("payload-size", 1550, "size of echo payload")
+	host := flag.String("host", "amp.unkaktus.art", "AMP host (amper-server)")
+	front := flag.String("front", "www.google.com", "Fronting domain")
+	interval := flag.Duration("interval", time.Second, "Ping interval")
+	listenAddress := flag.String("l", ":http", "Address to listen on, in format hostname:port")
 	flag.Parse()
 
 	c := &amper.Client{
@@ -128,7 +128,7 @@ func main() {
 	h.Handle("/status.svg", statusBadgeHandler)
 	h.Handle("/status", statusPageHandler)
 
-	if err := http.ListenAndServe(":http", h); err != nil {
+	if err := http.ListenAndServe(*listenAddress, h); err != nil {
 		log.Fatal().Err(err).Msg("serve HTTP")
 	}
 }
