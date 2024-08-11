@@ -82,6 +82,7 @@ var statusPageHandler http.Handler = http.HandlerFunc(func(w http.ResponseWriter
 
 var statusBadgeHandler http.Handler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "image/svg+xml;charset=utf-8")
+	w.Header().Set("Cache-Control", "no-cache, no-store")
 	if status.Works {
 		w.Write([]byte(worksBadge))
 	} else {
